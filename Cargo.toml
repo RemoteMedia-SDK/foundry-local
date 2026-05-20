@@ -1,0 +1,78 @@
+[package]
+name = "foundry-local-plugin"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "foundry_local_plugin"
+crate-type = ["cdylib"]
+
+# Standalone workspace — fully decoupled from any parent so the
+# `foundry-local-sdk` build.rs (which downloads ~hundreds of MB of
+# Foundry Core + ORT GenAI native libs from NuGet/ORT-Nightly) and
+# the SDK's heavy transitive deps never unify against a consumer's
+# workspace.
+[workspace]
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+debug = 0
+
+[profile.dev]
+opt-level = 1
+debug = 1
+incremental = true
+
+# ---------------------------------------------------------------------------
+# Dependencies — Path 3 loadable cdylib (hand-rolled AsyncStreamingNode).
+#
+# Notable absences:
+#   * `remotemedia-core` — would force ort / llama / multiprocess into
+#     our tree. Plugin runtime surface is the skinny crates only.
+#   * `reqwest`, `hyper` — Foundry Local runs in-process via FFI to
+#     the downloaded Foundry Core engine; no HTTP layer.
+# ---------------------------------------------------------------------------
+[dependencies]
+# Umbrella crate that re-exports the skinny ABI surface
+# (remotemedia-types, remotemedia-traits, StreamingNodeFfiAdapter,
+# plugin_export!) plus the abi_stable + async_ffi + rmp-serde
+# building blocks.
+#
+# Pinned by `rev` to the SDK commit that introduces
+# `remotemedia-llm` (the LLM-primitives extraction we depend on
+# below). Once that commit lands on `main`, switch to
+# `branch = "main"` to match sibling plugins.
+remotemedia-plugin-sdk = { git = "https://github.com/RemoteMedia-SDK/remotemedia-sdk.git", rev = "eadfeb7fdae0fd38dbae39a9ff2f793a1aabf4ee" }
+
+# Skinny shared LLM primitives — per-session `HistoryEntry`,
+# `ToolSpec`, streaming `ToolCallAccum` + `dispatch_tool_call`. The
+# in-tree `OpenAIChatNode` uses the exact same source. Pinned to the
+# same SDK rev for consistency.
+remotemedia-llm = { git = "https://github.com/RemoteMedia-SDK/remotemedia-sdk.git", rev = "eadfeb7fdae0fd38dbae39a9ff2f793a1aabf4ee" }
+
+# Direct deps required by attribute macros expanded inside
+# `plugin_export!()` (`#[sabi_extern_fn]`, `#[export_root_module]`).
+abi_stable = "0.11"
+
+# Trait machinery + async runtime helpers.
+async-trait = "0.1"
+tokio = { version = "1.35", features = ["sync", "rt", "rt-multi-thread", "time", "macros"] }
+tokio-stream = "0.1"
+
+# Config (de)serialization + schema generation for the manifest.
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = "0.8"
+
+# Diagnostics + concurrency primitives.
+tracing = "0.1"
+parking_lot = "0.12"
+
+# Microsoft Foundry Local SDK. `1.1` is the latest as of writing;
+# `build.rs` downloads Foundry Core engine + ORT GenAI native libs
+# from NuGet/ORT-Nightly at compile time (one-shot, cached). Enable
+# `winml` for NPU/GPU acceleration on Windows (no-op elsewhere).
+foundry-local-sdk = { version = "1.1" }
+# foundry-local-sdk = { version = "1.1", features = ["winml"] }

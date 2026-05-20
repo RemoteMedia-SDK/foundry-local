@@ -1,0 +1,26 @@
+# Microsoft Foundry Local as a loadable cdylib plugin (Path 3 —
+# hand-rolled `AsyncStreamingNode` via `remotemedia-plugin-sdk`).
+#
+# Hand-rolled because `foundry-local-sdk`'s build.rs downloads
+# hundreds of MB of native libraries (Foundry Core engine + ORT
+# GenAI). Default host builds shouldn't pay that cost. The Path 2
+# (`#[node]` dual-emit) shape would force the dep into core; this
+# layout keeps it isolated to one cdylib.
+#
+# Consumers reference this from a manifest as either:
+#
+#   "plugins": ["foundry-local@v0.1.0"]
+#       (canonical-org shorthand → github.com/RemoteMedia-SDK/foundry-local)
+#
+#   "plugins": ["./plugins/libfoundry_local_plugin.so"]
+#       (local path — for development before the release flow exists)
+
+[plugin]
+name        = "foundry-local"
+version     = "0.1.0"
+language    = "rust"
+description = "Microsoft Foundry Local SDK (in-process ONNX Runtime GenAI) — chat completions against locally-loaded models, no cloud calls"
+
+[rust]
+node_types    = ["FoundryLocalChatNode"]
+asset_pattern = "lib{name}-{arch}-{os}.{ext}"
