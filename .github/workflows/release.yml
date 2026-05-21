@@ -15,6 +15,19 @@ on:
 # the `asset_pattern` in `plugin.toml`), and uploads everything to
 # a GitHub Release for the pushed tag.
 #
+# Why `skip-platforms: aarch64-linux`:
+# foundry-local-sdk@1.1 has no `linux-aarch64` native libs AND its FFI
+# shim hardcodes `c_char = i8` (x86 default), so the source doesn't
+# even compile on ARM64 Linux where `c_char = u8`. Until upstream
+# adds aarch64-linux support we publish for the other 3 platforms
+# (x86_64-linux, aarch64-darwin, x86_64-windows). Consumers on
+# ARM64 Linux hit a precise `PlatformNotPublished` from the resolver.
+#
+# Why `@extract-remotemedia-llm` (not `@main`):
+# the `skip-platforms` input only exists on that SDK branch right now.
+# Switch back to `@main` once the branch merges to RemoteMedia-SDK/
+# remotemedia-sdk main.
+#
 # NOTE on Foundry's native libraries:
 # `foundry-local-sdk`'s build.rs downloads ~hundreds of MB of
 # Foundry Core engine + ORT GenAI native libs from NuGet/ORT-Nightly
@@ -25,10 +38,11 @@ on:
 # `scripts/release-local.sh` for a working precedent).
 jobs:
   release:
-    uses: RemoteMedia-SDK/remotemedia-sdk/.github/workflows/build-plugin.yml@main
+    uses: RemoteMedia-SDK/remotemedia-sdk/.github/workflows/build-plugin.yml@extract-remotemedia-llm
     with:
-      crate-name:   foundry-local-plugin
-      display-name: foundry-local
-      tag:          ${{ inputs.tag || github.ref_name }}
+      crate-name:     foundry-local-plugin
+      display-name:   foundry-local
+      tag:            ${{ inputs.tag || github.ref_name }}
+      skip-platforms: aarch64-linux
     permissions:
       contents: write
