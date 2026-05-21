@@ -1,0 +1,34 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v0.1.0)'
+        required: true
+
+# Calls the shared RemoteMedia-SDK reusable workflow that compiles
+# the plugin on ubuntu / macos / windows, packages the cdylib under
+# the canonical `lib{name}-{arch}-{os}.{ext}` asset name (matching
+# the `asset_pattern` in `plugin.toml`), and uploads everything to
+# a GitHub Release for the pushed tag.
+#
+# NOTE on Foundry's native libraries:
+# `foundry-local-sdk`'s build.rs downloads ~hundreds of MB of
+# Foundry Core engine + ORT GenAI native libs from NuGet/ORT-Nightly
+# and places them in cargo's `OUT_DIR`. At runtime the SDK
+# `libloading`s them. If a release uploaded from CI turns out NOT to
+# carry the bundled natives in a consumer-discoverable way, the fix
+# is to switch to the multi-binary upload pattern (see llama-cpp's
+# `scripts/release-local.sh` for a working precedent).
+jobs:
+  release:
+    uses: RemoteMedia-SDK/remotemedia-sdk/.github/workflows/build-plugin.yml@main
+    with:
+      crate-name:   foundry-local-plugin
+      display-name: foundry-local
+      tag:          ${{ inputs.tag || github.ref_name }}
+    permissions:
+      contents: write
