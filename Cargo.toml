@@ -44,13 +44,13 @@ incremental = true
 # `remotemedia-llm` (the LLM-primitives extraction we depend on
 # below). Once that commit lands on `main`, switch to
 # `branch = "main"` to match sibling plugins.
-remotemedia-plugin-sdk = { git = "https://github.com/RemoteMedia-SDK/remotemedia-sdk.git", rev = "eadfeb7fdae0fd38dbae39a9ff2f793a1aabf4ee" }
+remotemedia-plugin-sdk = { git = "ssh://git@github.com/RemoteMedia-SDK/remotemedia-sdk.git", rev = "eadfeb7fdae0fd38dbae39a9ff2f793a1aabf4ee" }
 
 # Skinny shared LLM primitives — per-session `HistoryEntry`,
 # `ToolSpec`, streaming `ToolCallAccum` + `dispatch_tool_call`. The
 # in-tree `OpenAIChatNode` uses the exact same source. Pinned to the
 # same SDK rev for consistency.
-remotemedia-llm = { git = "https://github.com/RemoteMedia-SDK/remotemedia-sdk.git", rev = "eadfeb7fdae0fd38dbae39a9ff2f793a1aabf4ee" }
+remotemedia-llm = { git = "ssh://git@github.com/RemoteMedia-SDK/remotemedia-sdk.git", rev = "eadfeb7fdae0fd38dbae39a9ff2f793a1aabf4ee" }
 
 # Direct deps required by attribute macros expanded inside
 # `plugin_export!()` (`#[sabi_extern_fn]`, `#[export_root_module]`).
