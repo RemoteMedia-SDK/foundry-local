@@ -1,7 +1,7 @@
 //! `FoundryLocalChatNode` — OpenAI-shaped chat completions backed by
 //! the in-process Foundry Local engine.
 //!
-//! Re-uses [`remotemedia_llm`] for `HistoryEntry`, `ToolSpec`,
+//! Re-uses [`remotemedia_modality::llm`] for `HistoryEntry`, `ToolSpec`,
 //! `ToolCallAccum`, and `dispatch_tool_call` — same source of truth
 //! the in-tree `OpenAIChatNode` reads. The transport, however, is
 //! the Foundry Local Rust SDK (`foundry-local-sdk`), not HTTP/SSE.
@@ -16,7 +16,7 @@ use foundry_local_sdk::{
     LogLevel, Model,
 };
 use parking_lot::Mutex;
-use remotemedia_llm::{
+use remotemedia_modality::llm::{
     dispatch_tool_call, to_openai_tools_array, window_start, HistoryEntry, ToolCallAccum, ToolSpec,
     default_say_tool, default_show_tool,
 };

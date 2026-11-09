@@ -17,7 +17,7 @@
 
 [plugin]
 name        = "foundry-local"
-version     = "0.1.0"
+version     = "0.5.0"
 language    = "rust"
 description = "Microsoft Foundry Local SDK (in-process ONNX Runtime GenAI) — chat completions against locally-loaded models, no cloud calls"
 

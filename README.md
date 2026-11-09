@@ -120,8 +120,8 @@ doesn't try to unify its deps with any consumer workspace.
 History bookkeeping (`HistoryEntry`, turn-bounded windowing), tool
 schema (`ToolSpec`), the streaming `ToolCallAccum`, and
 `dispatch_tool_call` come from the skinny
-[`remotemedia-llm`](https://github.com/RemoteMedia-SDK/remotemedia-sdk/tree/main/crates/llm)
-crate — the same source the in-tree `OpenAIChatNode` uses. Adding a
+[`remotemedia-modality`](https://github.com/RemoteMedia-SDK/remotemedia-plugin-sdk/tree/main/crates/modality)
+crate (`llm` feature) — the same source the in-tree `OpenAIChatNode` uses. Adding a
 new built-in tool, fixing a history-window bug, or extending the tool
 dispatch contract changes behavior in both places without code
 duplication.
