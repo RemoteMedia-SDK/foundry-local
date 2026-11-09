@@ -23,10 +23,9 @@ on:
 # (x86_64-linux, aarch64-darwin, x86_64-windows). Consumers on
 # ARM64 Linux hit a precise `PlatformNotPublished` from the resolver.
 #
-# Why `@extract-remotemedia-llm` (not `@main`):
-# the `skip-platforms` input only exists on that SDK branch right now.
-# Switch back to `@main` once the branch merges to RemoteMedia-SDK/
-# remotemedia-sdk main.
+# The reusable workflow lives in the public remotemedia-plugin-sdk
+# repo: GitHub does not let a public repo call a workflow in a private
+# one (remotemedia-sdk). Its `@main` carries the `skip-platforms` input.
 #
 # NOTE on Foundry's native libraries:
 # `foundry-local-sdk`'s build.rs downloads ~hundreds of MB of
@@ -38,7 +37,7 @@ on:
 # `scripts/release-local.sh` for a working precedent).
 jobs:
   release:
-    uses: RemoteMedia-SDK/remotemedia-sdk/.github/workflows/build-plugin.yml@extract-remotemedia-llm
+    uses: RemoteMedia-SDK/remotemedia-plugin-sdk/.github/workflows/build-plugin.yml@main
     with:
       crate-name:     foundry-local-plugin
       display-name:   foundry-local
