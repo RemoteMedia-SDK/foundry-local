@@ -18,7 +18,7 @@
 //!   * **`FoundryLocalChatNode`** — OpenAI-shaped streaming chat
 //!     completions. Reuses the same `HistoryEntry` / `ToolSpec` /
 //!     `dispatch_tool_call` primitives the in-tree `OpenAIChatNode`
-//!     uses, sourced from the skinny `remotemedia-llm` crate so
+//!     uses, sourced from the skinny `remotemedia-modality` crate so
 //!     there's one source of truth.
 //!
 //! ## What's NOT exported yet
